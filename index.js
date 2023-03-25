@@ -38,6 +38,13 @@ async function run() {
         })
     })
 
+    // API For getting customer order data
+    app.get('/orderList',(req,res)=>{
+      customerOrderCollection.find({email:req.query.email}).toArray().then(result=>{
+        res.send(result);
+      })
+    })
+
 
 
   } finally {
