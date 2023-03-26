@@ -30,6 +30,7 @@ async function run() {
     const database = client.db(`${process.env.DATABASE}`);
     const customerOrderCollection = database.collection('customerOrder');
     const customerReviewCollection = database.collection('customerReview');
+    const adminsCollection = database.collection('admins');
     console.log('Connected to Database');
 
 
@@ -52,6 +53,21 @@ async function run() {
     app.post('/postReview', (req, res) => {
       const review = req.body;
       customerReviewCollection.insertOne(review).then(result => {
+        res.send(result.acknowledged);
+      })
+    })
+
+    // All customer Review 
+    app.get('/allCustomerReview',(req,res)=>{
+      customerReviewCollection.find({}).toArray().then(result =>{
+        res.send(result);
+      })
+    })
+
+    // Make Admin Api
+    app.post('/makeAdmin',(req,res)=>{
+      const admin = req.body;
+      adminsCollection.insertOne(admin).then(result =>{
         res.send(result.acknowledged);
       })
     })
