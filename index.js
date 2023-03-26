@@ -58,17 +58,30 @@ async function run() {
     })
 
     // All customer Review 
-    app.get('/allCustomerReview',(req,res)=>{
-      customerReviewCollection.find({}).toArray().then(result =>{
+    app.get('/allCustomerReview', (req, res) => {
+      customerReviewCollection.find({}).toArray().then(result => {
         res.send(result);
       })
     })
 
     // Make Admin Api
-    app.post('/makeAdmin',(req,res)=>{
+    app.post('/makeAdmin', (req, res) => {
       const admin = req.body;
-      adminsCollection.insertOne(admin).then(result =>{
+      adminsCollection.insertOne(admin).then(result => {
         res.send(result.acknowledged);
+      })
+    })
+
+    // Check Admin 
+    app.get('/checkAdmin', (req, res) => {
+      const emailToCheck = req.query.email;
+      adminsCollection.find({ adminMail: emailToCheck }).toArray().then(result => {
+        if (result.length >= 1) {
+          res.send(true);
+        }
+        else {
+          res.send(false);
+        }
       })
     })
 
