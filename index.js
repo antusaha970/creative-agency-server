@@ -9,6 +9,7 @@ const fs = require('fs-extra');
 require('dotenv').config();
 const uri = `mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@cluster0.cfh8khq.mongodb.net/${process.env.DATABASE}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri);
+const  ObjectId = require('mongodb').ObjectId;
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -108,6 +109,17 @@ async function run() {
         res.send(result);
       })
     })
+
+    // To update status of the customer service
+    app.patch('/updateStatus',(req,res)=>{
+      const id = req.body.id;
+      customerOrderCollection.updateOne({_id: new ObjectId(id)},{$set:{
+        status: 'done'
+      }})
+      .then(result=>{
+        res.send(result.acknowledged);
+      });
+    });
 
 
   } finally {
