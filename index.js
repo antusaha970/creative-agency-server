@@ -31,6 +31,7 @@ async function run() {
     const customerOrderCollection = database.collection('customerOrder');
     const customerReviewCollection = database.collection('customerReview');
     const adminsCollection = database.collection('admins');
+    const allServiceCollection = database.collection('allService');
     console.log('Connected to Database');
 
 
@@ -91,6 +92,14 @@ async function run() {
       customerOrderCollection.find({}).toArray().then(result => {
         res.send(result);
       });
+    });
+
+    // To add New service 
+    app.post('/addNewService',(req,res)=>{
+      const service = req.body;
+      allServiceCollection.insertOne(service).then(result =>{
+        res.send(result.acknowledged);
+      })
     });
 
 
