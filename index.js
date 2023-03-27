@@ -86,6 +86,13 @@ async function run() {
     })
 
 
+    // Get all customer orders API
+    app.get('/showAllOrders',(req,res)=>{
+      customerOrderCollection.find({}).toArray().then(result => {
+        res.send(result);
+      });
+    });
+
 
   } finally {
     // Ensures that the client will close when you finish/error
