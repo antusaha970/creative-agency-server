@@ -102,6 +102,13 @@ async function run() {
       })
     });
 
+    // To get all services 
+    app.get('/allServices',(req,res)=>{
+      allServiceCollection.find({}).toArray().then(result =>{
+        res.send(result);
+      })
+    })
+
 
   } finally {
     // Ensures that the client will close when you finish/error
