@@ -121,6 +121,13 @@ async function run() {
       });
     });
 
+    //To receive mail from user
+    app.post('/contactMail',(req, res)=>{
+      const {email,name,message} = req.body;
+      console.log(email,name,message);
+        res.send(true);
+    });
+
 
   } finally {
     // Ensures that the client will close when you finish/error
