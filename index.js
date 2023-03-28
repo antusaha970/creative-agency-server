@@ -6,10 +6,11 @@ const cors = require('cors');
 const { MongoClient } = require("mongodb");
 const fileUpload = require("express-fileupload");
 const fs = require('fs-extra');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 const uri = `mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@cluster0.cfh8khq.mongodb.net/${process.env.DATABASE}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri);
-const  ObjectId = require('mongodb').ObjectId;
+const ObjectId = require('mongodb').ObjectId;
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -89,43 +90,72 @@ async function run() {
 
 
     // Get all customer orders API
-    app.get('/showAllOrders',(req,res)=>{
+    app.get('/showAllOrders', (req, res) => {
       customerOrderCollection.find({}).toArray().then(result => {
         res.send(result);
       });
     });
 
     // To add New service 
-    app.post('/addNewService',(req,res)=>{
+    app.post('/addNewService', (req, res) => {
       const service = req.body;
-      allServiceCollection.insertOne(service).then(result =>{
+      allServiceCollection.insertOne(service).then(result => {
         res.send(result.acknowledged);
       })
     });
 
     // To get all services 
-    app.get('/allServices',(req,res)=>{
-      allServiceCollection.find({}).toArray().then(result =>{
+    app.get('/allServices', (req, res) => {
+      allServiceCollection.find({}).toArray().then(result => {
         res.send(result);
       })
     })
 
     // To update status of the customer service
-    app.patch('/updateStatus',(req,res)=>{
+    app.patch('/updateStatus', (req, res) => {
       const id = req.body.id;
-      customerOrderCollection.updateOne({_id: new ObjectId(id)},{$set:{
-        status: 'done'
-      }})
-      .then(result=>{
-        res.send(result.acknowledged);
-      });
+      customerOrderCollection.updateOne({ _id: new ObjectId(id) }, {
+        $set: {
+          status: 'done'
+        }
+      })
+        .then(result => {
+          res.send(result.acknowledged);
+        });
     });
 
     //To receive mail from user
-    app.post('/contactMail',(req, res)=>{
-      const {email,name,message} = req.body;
-      console.log(email,name,message);
-        res.send(true);
+    app.post('/contactMail', (req, res) => {
+      const { email, name, message } = req.body;
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: `${process.env.GMAIL}`,
+          pass: `${process.env.GMAIL_PASS}`
+        }
+      });
+
+      const mailOptions = {
+        from: `${email}`,
+        to: 'antusaha970@gmail.com',
+        subject: 'Mail from creative agency user',
+        text: `
+          This mail is from ${name} and mail address ${email}
+
+          ${message}
+
+        `
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+          res.send(false);
+        } else {
+          console.log('Email sent: ' + info.response);
+          res.send(true);
+        }
+      });
     });
 
 
